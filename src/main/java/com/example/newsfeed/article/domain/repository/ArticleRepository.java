@@ -1,4 +1,7 @@
 package com.example.newsfeed.article.domain.repository;
 
-public class ArticleRepository {
+import com.example.newsfeed.article.domain.entity.Article;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ArticleRepository extends JpaRepository<Article, Long> {
 }
