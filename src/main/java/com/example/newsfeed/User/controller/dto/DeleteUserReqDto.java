@@ -8,8 +8,8 @@ import lombok.Getter;
 public class DeleteUserReqDto {
 
     @NotEmpty()
-    @Pattern(regexp = "^.*(?=^.{4,20}$)(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$",
-            message = "비밀번호는 영문자, 숫자, 특수문자만 사용가능하며, 최소 각각 1개씩은 있어야합니다. 길이는 4 ~ 20 입니다.")
+    @Pattern(regexp = "^.*(?=^.{8,20}$)(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$",
+            message = "비밀번호는 영문자, 숫자, 특수문자가 최소 1글자씩 있어야합니다. 길이는 8 ~ 20 입니다.")
     private final String password;
 
     public DeleteUserReqDto(String password) {
