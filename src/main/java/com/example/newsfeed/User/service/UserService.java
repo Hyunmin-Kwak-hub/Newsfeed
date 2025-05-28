@@ -1,9 +1,6 @@
 package com.example.newsfeed.User.service;
 
-import com.example.newsfeed.User.controller.dto.CreateUserReqDto;
-import com.example.newsfeed.User.controller.dto.UpdateUserReqDto;
-import com.example.newsfeed.User.controller.dto.UserListResDto;
-import com.example.newsfeed.User.controller.dto.UserResDto;
+import com.example.newsfeed.User.controller.dto.*;
 import com.example.newsfeed.User.domain.entity.User;
 import com.example.newsfeed.User.domain.repository.UserRepository;
 import com.example.newsfeed.global.config.PasswordEncoder;
@@ -52,12 +49,23 @@ public class UserService {
                 new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
         checkUserPassword(reqDto.getPassword(), user);
 
+        user.updateUser(reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
+
+        return new UserResDto(user);
+    }
+
+    @Transactional
+    public UserResDto updateUserPassword(Long userId, UpdateUserPasswordReqDto reqDto) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
+        checkUserPassword(reqDto.getPassword(), user);
+
         if(reqDto.getPassword().equals(reqDto.getNewPassword())) {
             throw new BadRequestException("현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다. ");
         }
 
         String encodedPassword = passwordEncoder.encode(reqDto.getNewPassword());
-        user.updateUser(encodedPassword, reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
+        user.updateUserPassword(encodedPassword);
 
         return new UserResDto(user);
     }
