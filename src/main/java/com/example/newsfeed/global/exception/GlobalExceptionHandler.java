@@ -36,7 +36,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             NotFoundException.class,
             UnauthorizedException.class,
-            BadRequestException.class
+            BadRequestException.class,
+            ConflictException.class,
     })
     public ResponseEntity<Map<String, Object>> handleCustomExceptions(RuntimeException ex) {
         HttpStatus status = resolveStatus(ex);
@@ -53,6 +54,7 @@ public class GlobalExceptionHandler {
         if (ex instanceof UnauthorizedException) return HttpStatus.UNAUTHORIZED;
         if (ex instanceof NotFoundException) return HttpStatus.NOT_FOUND;
         if (ex instanceof BadRequestException) return HttpStatus.BAD_REQUEST;
+        if (ex instanceof ConflictException) return HttpStatus.CONFLICT;
         return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 

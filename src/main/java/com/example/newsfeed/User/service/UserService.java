@@ -7,6 +7,8 @@ import com.example.newsfeed.User.controller.dto.UserResDto;
 import com.example.newsfeed.User.domain.entity.User;
 import com.example.newsfeed.User.domain.repository.UserRepository;
 import com.example.newsfeed.global.config.PasswordEncoder;
+import com.example.newsfeed.global.exception.BadRequestException;
+import com.example.newsfeed.global.exception.ConflictException;
 import com.example.newsfeed.global.exception.NotFoundException;
 import com.example.newsfeed.global.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserResDto createUser(CreateUserReqDto reqDto) {
+        boolean existsEmail = userRepository.existsUserByEmail(reqDto.getEmail());
+        if (existsEmail) {
+            throw new ConflictException("이미 가입된 이메일입니다.");
+        }
         String encodedPassword = passwordEncoder.encode(reqDto.getPassword());
         User user = new User(reqDto.getEmail(), encodedPassword, reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
         return new UserResDto(userRepository.save(user));
