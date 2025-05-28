@@ -10,6 +10,7 @@ import com.example.newsfeed.global.exception.NotFoundException;
 import com.example.newsfeed.global.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +34,8 @@ public class UserService {
         return new UserResDto(userRepository.save(user));
     }
 
-    public List<UserListResDto> findUserList() {
-        return userRepository.findAll().stream()
+    public List<UserListResDto> findUserList(Pageable pageable) {
+        return userRepository.findAll(pageable).stream()
                 .filter(find -> !find.getDeleted()).map(UserListResDto::new).toList();
     }
 

@@ -5,6 +5,9 @@ import com.example.newsfeed.User.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +35,10 @@ public class UserController {
 
     // 회원 전체 조회
     @GetMapping
-    public ResponseEntity<List<UserListResDto>> findUserList() {
-        List<UserListResDto> userResDtoList = userService.findUserList();
+    public ResponseEntity<List<UserListResDto>> findUserList(
+            @PageableDefault(sort = "updatedDateTime", direction = Sort.Direction.DESC) final Pageable pageable
+    ) {
+        List<UserListResDto> userResDtoList = userService.findUserList(pageable);
         return new ResponseEntity<>(userResDtoList, HttpStatus.OK);
     }
 
