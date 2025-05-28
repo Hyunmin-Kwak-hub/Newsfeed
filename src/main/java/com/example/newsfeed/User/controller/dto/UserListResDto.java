@@ -3,22 +3,16 @@ package com.example.newsfeed.User.controller.dto;
 import com.example.newsfeed.User.domain.entity.User;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
-public class UserResDto {
+public class UserListResDto {
 
     private final String userName;
     private final String info;
     private final String profileImgUrl;
-    private final LocalDateTime createdDateTime;
-    private final LocalDateTime updatedDateTime;
 
-    public UserResDto(User user) {
+    public UserListResDto(User user) {
         this.userName = user.getUsername();
         this.info = user.getInfo();
         this.profileImgUrl = user.getProfileImgUrl();
-        this.createdDateTime = user.getCreatedDateTime();
-        this.updatedDateTime = user.getUpdatedDateTime();
     }
 }
