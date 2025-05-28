@@ -3,10 +3,12 @@ package com.example.newsfeed.User.domain.entity;
 import com.example.newsfeed.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLDelete;
 
 @Getter
 @Entity
 @Table(name = "user")
+@SQLDelete(sql = "UPDATE user SET deleted = true WHERE id = ?")
 public class User extends BaseTimeEntity {
 
     @Id
@@ -27,6 +29,9 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "profile_img_url", columnDefinition = "text")
     private String profileImgUrl;
+
+    @Column(nullable = false)
+    private Boolean deleted = false;
 
     public User() {}
 

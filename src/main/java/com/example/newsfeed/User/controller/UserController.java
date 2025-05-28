@@ -64,7 +64,7 @@ public class UserController {
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
-    // 회원 삭제
+    // 회원 탈퇴
     @DeleteMapping("/{user_id}")
     public ResponseEntity<Void> deleteUser(
             @PathVariable Long user_id,

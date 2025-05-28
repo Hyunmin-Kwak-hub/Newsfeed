@@ -34,19 +34,24 @@ public class UserService {
     }
 
     public List<UserListResDto> findUserList() {
-        return userRepository.findAll().stream().map(UserListResDto::new).toList();
+        return userRepository.findAll().stream()
+                .filter(find -> !find.getDeleted()).map(UserListResDto::new).toList();
+    }
+
+    private User findNotDeletedUserById(Long userId) {
+        return userRepository.findById(userId)
+                .filter(find -> !find.getDeleted())
+                .orElseThrow(() ->new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
     }
 
     public UserResDto findUserById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
+        User user = findNotDeletedUserById(userId);
         return new UserResDto(user);
     }
 
     @Transactional
     public UserResDto updateUser(Long userId, UpdateUserReqDto reqDto) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
+        User user = findNotDeletedUserById(userId);
         checkUserPassword(reqDto.getPassword(), user);
 
         user.updateUser(reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
@@ -56,8 +61,7 @@ public class UserService {
 
     @Transactional
     public UserResDto updateUserPassword(Long userId, UpdateUserPasswordReqDto reqDto) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
+        User user = findNotDeletedUserById(userId);
         checkUserPassword(reqDto.getPassword(), user);
 
         if(reqDto.getPassword().equals(reqDto.getNewPassword())) {
@@ -71,8 +75,7 @@ public class UserService {
     }
 
     public void deleteUser(Long userId, String password) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
+        User user = findNotDeletedUserById(userId);
         checkUserPassword(password, user);
         userRepository.delete(user);
     }
