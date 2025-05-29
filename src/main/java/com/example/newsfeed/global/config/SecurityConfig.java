@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, USER[0], USER[1]).permitAll()
                         .requestMatchers(HttpMethod.GET, USER[0], USER[2]).permitAll()
 
-                        .requestMatchers(USER[2], USER[3]).authenticated()
+                        .requestMatchers(USER[0], USER[3]).authenticated()
 
                         //article
                         .requestMatchers(HttpMethod.GET, ARTICLE[0], ARTICLE[1],  ARTICLE[2]).permitAll()

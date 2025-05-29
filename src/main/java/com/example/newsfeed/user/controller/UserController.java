@@ -53,32 +53,29 @@ public class UserController {
     }
 
     //회원 단건 수정
-    @PutMapping("/{user_id}")
+    @PutMapping()
     public ResponseEntity<UserResDto> updateUser(
-            @PathVariable Long user_id,
             @Valid @RequestBody UpdateUserReqDto reqDto
     ) {
-        UserResDto userResDto = userService.updateUser(user_id, reqDto);
+        UserResDto userResDto = userService.updateUser(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
     //회원 비밀번호 수정
-    @PutMapping("/{user_id}/password")
+    @PutMapping("/password")
     public ResponseEntity<UserResDto> updateUser(
-            @PathVariable Long user_id,
             @Valid @RequestBody UpdateUserPasswordReqDto reqDto
     ) {
-        UserResDto userResDto = userService.updateUserPassword(user_id, reqDto);
+        UserResDto userResDto = userService.updateUserPassword(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
     // 회원 탈퇴
-    @DeleteMapping("/{user_id}")
+    @DeleteMapping()
     public ResponseEntity<Void> deleteUser(
-            @PathVariable Long user_id,
             @Valid @RequestBody DeleteUserReqDto reqDto
     ) {
-        userService.deleteUser(user_id, reqDto.getPassword());
+        userService.deleteUser(reqDto.getPassword());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
