@@ -30,8 +30,11 @@ public class UserController {
     }
 
     // 로그인
-
-    // 로그아웃
+    @PostMapping("/login")
+    public ResponseEntity<LoginResDto> login(@Valid @RequestBody LoginReqDto reqDto) {
+        LoginResDto loginResDto = userService.login(reqDto.getEmail(), reqDto.getPassword());
+        return new ResponseEntity<>(loginResDto, HttpStatus.OK);
+    }
 
     // 회원 전체 조회
     @GetMapping

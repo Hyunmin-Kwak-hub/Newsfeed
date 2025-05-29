@@ -1,5 +1,6 @@
 package com.example.newsfeed.user.service;
 
+import com.example.newsfeed.global.config.JwtUtil;
 import com.example.newsfeed.user.controller.dto.*;
 import com.example.newsfeed.user.domain.entity.User;
 import com.example.newsfeed.user.domain.repository.UserRepository;
@@ -23,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public UserResDto createUser(CreateUserReqDto reqDto) {
         boolean existsEmail = userRepository.existsUserByEmail(reqDto.getEmail());
@@ -32,6 +34,15 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(reqDto.getPassword());
         User user = new User(reqDto.getEmail(), encodedPassword, reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
         return new UserResDto(userRepository.save(user));
+    }
+
+    public LoginResDto login(String email, String password) {
+        User user = userRepository.findUserByEmail(email)
+                .filter(find -> !find.getDeleted())
+                .orElseThrow(() -> new NotFoundException("이메일이 일치하지 않습니다."));
+        checkUserPassword(password, user);
+        String token = jwtUtil.createToken(user.getId(), user.getUsername());
+        return new LoginResDto(token, user.getUsername());
     }
 
     public List<UserListResDto> findUserList(Pageable pageable) {
