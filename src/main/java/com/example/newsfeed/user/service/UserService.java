@@ -1,11 +1,8 @@
-package com.example.newsfeed.User.service;
+package com.example.newsfeed.user.service;
 
-import com.example.newsfeed.User.controller.dto.CreateUserReqDto;
-import com.example.newsfeed.User.controller.dto.UpdateUserReqDto;
-import com.example.newsfeed.User.controller.dto.UserListResDto;
-import com.example.newsfeed.User.controller.dto.UserResDto;
-import com.example.newsfeed.User.domain.entity.User;
-import com.example.newsfeed.User.domain.repository.UserRepository;
+import com.example.newsfeed.user.controller.dto.*;
+import com.example.newsfeed.user.domain.entity.User;
+import com.example.newsfeed.user.domain.repository.UserRepository;
 import com.example.newsfeed.global.config.PasswordEncoder;
 import com.example.newsfeed.global.exception.BadRequestException;
 import com.example.newsfeed.global.exception.ConflictException;
@@ -13,6 +10,7 @@ import com.example.newsfeed.global.exception.NotFoundException;
 import com.example.newsfeed.global.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,20 +34,35 @@ public class UserService {
         return new UserResDto(userRepository.save(user));
     }
 
-    public List<UserListResDto> findUserList() {
-        return userRepository.findAll().stream().map(UserListResDto::new).toList();
+    public List<UserListResDto> findUserList(Pageable pageable) {
+        return userRepository.findAll(pageable).stream()
+                .filter(find -> !find.getDeleted()).map(UserListResDto::new).toList();
+    }
+
+    private User findNotDeletedUserById(Long userId) {
+        return userRepository.findById(userId)
+                .filter(find -> !find.getDeleted())
+                .orElseThrow(() ->new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
     }
 
     public UserResDto findUserById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
+        User user = findNotDeletedUserById(userId);
         return new UserResDto(user);
     }
 
     @Transactional
     public UserResDto updateUser(Long userId, UpdateUserReqDto reqDto) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
+        User user = findNotDeletedUserById(userId);
+        checkUserPassword(reqDto.getPassword(), user);
+
+        user.updateUser(reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
+
+        return new UserResDto(user);
+    }
+
+    @Transactional
+    public UserResDto updateUserPassword(Long userId, UpdateUserPasswordReqDto reqDto) {
+        User user = findNotDeletedUserById(userId);
         checkUserPassword(reqDto.getPassword(), user);
 
         if(reqDto.getPassword().equals(reqDto.getNewPassword())) {
@@ -57,14 +70,13 @@ public class UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(reqDto.getNewPassword());
-        user.updateUser(encodedPassword, reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
+        user.updateUserPassword(encodedPassword);
 
         return new UserResDto(user);
     }
 
     public void deleteUser(Long userId, String password) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
+        User user = findNotDeletedUserById(userId);
         checkUserPassword(password, user);
         userRepository.delete(user);
     }

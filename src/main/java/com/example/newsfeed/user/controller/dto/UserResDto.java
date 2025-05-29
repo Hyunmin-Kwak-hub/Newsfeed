@@ -1,6 +1,6 @@
-package com.example.newsfeed.User.controller.dto;
+package com.example.newsfeed.user.controller.dto;
 
-import com.example.newsfeed.User.domain.entity.User;
+import com.example.newsfeed.user.domain.entity.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
