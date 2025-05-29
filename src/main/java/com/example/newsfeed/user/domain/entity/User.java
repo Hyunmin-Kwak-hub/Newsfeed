@@ -1,4 +1,4 @@
-package com.example.newsfeed.User.domain.entity;
+package com.example.newsfeed.user.domain.entity;
 
 import com.example.newsfeed.global.common.BaseTimeEntity;
 import jakarta.persistence.*;

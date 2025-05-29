@@ -1,8 +1,8 @@
-package com.example.newsfeed.User.service;
+package com.example.newsfeed.user.service;
 
-import com.example.newsfeed.User.controller.dto.*;
-import com.example.newsfeed.User.domain.entity.User;
-import com.example.newsfeed.User.domain.repository.UserRepository;
+import com.example.newsfeed.user.controller.dto.*;
+import com.example.newsfeed.user.domain.entity.User;
+import com.example.newsfeed.user.domain.repository.UserRepository;
 import com.example.newsfeed.global.config.PasswordEncoder;
 import com.example.newsfeed.global.exception.BadRequestException;
 import com.example.newsfeed.global.exception.ConflictException;

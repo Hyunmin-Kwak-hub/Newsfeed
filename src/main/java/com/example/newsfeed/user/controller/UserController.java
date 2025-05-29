@@ -1,7 +1,7 @@
-package com.example.newsfeed.User.controller;
+package com.example.newsfeed.user.controller;
 
-import com.example.newsfeed.User.controller.dto.*;
-import com.example.newsfeed.User.service.UserService;
+import com.example.newsfeed.user.controller.dto.*;
+import com.example.newsfeed.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.example.newsfeed.User.controller.dto;
+package com.example.newsfeed.user.controller.dto;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
