@@ -1,7 +1,7 @@
 package com.example.newsfeed.article.domain.entity;
 
 import com.example.newsfeed.global.common.BaseTimeEntity;
-import com.example.newsfeed.User.domain.entity.User;
+import com.example.newsfeed.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
