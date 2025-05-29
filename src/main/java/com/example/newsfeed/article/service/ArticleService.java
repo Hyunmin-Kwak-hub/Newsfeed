@@ -27,7 +27,7 @@ public class ArticleService {
     public ArticleResDto createArticle(ArticleReqDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
-            throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
+            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
         }
 
         Long userId = (Long) session.getAttribute("userId");
@@ -38,7 +38,7 @@ public class ArticleService {
     }
 
     public Page<ArticleResDto> getAllArticles(int page) {
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         Page<Article> articles = articleRepository.findAll(pageable);
 
         if (articles.isEmpty()) {
@@ -55,17 +55,19 @@ public class ArticleService {
     }
 
     public Page<ArticleResDto> getArticlesByUser(Long userId, int page) {
-        PageRequest pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+        PageRequest pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         return articleRepository.findByUserId(userId, pageable)
                 .map(ArticleResDto::new);
     }
 
-    public ArticleResDto updateArticle(Long id, ArticleReqDto requestDto) {
+    public ArticleResDto updateArticle(Long id, ArticleReqDto requestDto, Long userId) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
 
-        article.setTitle(requestDto.getTitle());
-        article.setContent(requestDto.getContent());
+        if (!article.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("수정 권한이 없습니다.");
+        }
+        article.update(requestDto.getTitle(), requestDto.getContent(), requestDto.getImgUrl());
 
         return new ArticleResDto(articleRepository.save(article));
     }
@@ -73,7 +75,7 @@ public class ArticleService {
     @Transactional
     public void deleteArticle(Long id, Long userId) {
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("삭제할 게시글이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
 
         if (!article.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("삭제 권한이 없습니다.");

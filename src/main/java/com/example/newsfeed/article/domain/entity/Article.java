@@ -23,17 +23,23 @@ public class Article extends BaseTimeEntity {
     private String title;
 
     @Setter
-    @Column(nullable = false, columnDefinition = "long text")
+    @Column(nullable = false)
     private String content;
 
     @Setter
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(nullable = false)
     private String imgUrl;
 
     public Article() {}
 
     public Article(User user, String title, String content, String imgUrl) {
         this.user = user;
+        this.title = title;
+        this.content = content;
+        this.imgUrl = imgUrl;
+    }
+
+    public void update(String title, String content, String imgUrl) {
         this.title = title;
         this.content = content;
         this.imgUrl = imgUrl;

@@ -37,8 +37,8 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public ArticleResDto updateArticle(@PathVariable Long id, @RequestBody ArticleReqDto requestDto) {
-        return articleService.updateArticle(id, requestDto);
+    public ArticleResDto updateArticle(@PathVariable Long id, @RequestBody ArticleReqDto requestDto, @RequestParam Long userId) {
+        return articleService.updateArticle(id, requestDto, userId);
     }
 
     @DeleteMapping("/{id}")
