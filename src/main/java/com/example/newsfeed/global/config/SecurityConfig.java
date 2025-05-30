@@ -15,8 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.example.newsfeed.global.common.ApiUrls.*;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -38,30 +36,18 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         //user
-                        .requestMatchers(HttpMethod.POST, USER[0], USER[1]).permitAll()
-                        .requestMatchers(HttpMethod.GET, USER[0], USER[2]).permitAll()
-
-                        .requestMatchers(USER[0], USER[3]).authenticated()
-
+                        .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/*").permitAll()
                         //article
-                        .requestMatchers(HttpMethod.GET, ARTICLE[0], ARTICLE[1],  ARTICLE[2]).permitAll()
-
-                        .requestMatchers(ARTICLE[0], ARTICLE[2]).authenticated()
-
+                        .requestMatchers(HttpMethod.GET, "/api/articles", "/api/*/articles", "/api/articles/*").permitAll()
                         //comment
-                        .requestMatchers(HttpMethod.GET, COMMENT[0], COMMENT[1]).permitAll()
-                        .requestMatchers(COMMENT[0], COMMENT[1]).authenticated()
-
+                        .requestMatchers(HttpMethod.GET, "/api/articles/*/comments", "/api/articles/*/comments/*").permitAll()
                         //follows
-                        .requestMatchers(HttpMethod.GET, FOLLOW[0]).permitAll()
-
-                        .requestMatchers(FOLLOW[0], FOLLOW[1], FOLLOW[2]).authenticated()
-
+                        .requestMatchers(HttpMethod.GET, "/api/*/follows").permitAll()
                         //likes
-                        .requestMatchers(HttpMethod.GET, LIKE[0], LIKE[1]).permitAll()
-                        .requestMatchers(LIKE[0], LIKE[1]).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/articles/*/likes", "/api/articles/*/comments/*/likes").permitAll()
 
-                        .anyRequest().denyAll() // 나머지 요청 거부
+                        .anyRequest().authenticated()
                 )
 
                 //JWT 검증 필터 등록
