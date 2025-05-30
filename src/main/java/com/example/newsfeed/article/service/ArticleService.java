@@ -18,6 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
@@ -56,8 +60,28 @@ public class ArticleService {
 
     public Page<ArticleResDto> getArticlesByUser(Long userId, int page) {
         PageRequest pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDateTime"));
+
+        Page<Article> articles = articleRepository.findByUserId(userId, pageable);
+        if(articles.isEmpty()) {
+            throw new NotFoundException("해당 id가 작성한 게시글이 없습니다.");
+        }
+
         return articleRepository.findByUserId(userId, pageable)
                 .map(ArticleResDto::new);
+    }
+
+    public Page<ArticleResDto> getArticlesByDateBetween(LocalDate startDate, LocalDate endDate, int page) {
+        PageRequest pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDateTime"));
+
+        LocalDateTime startDateTime = startDate.atTime(LocalTime.MIN);
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+        Page<Article> articles = articleRepository.findByCreatedDateTimeBetween(startDateTime, endDateTime, pageable);
+
+        if (articles.isEmpty()) {
+            throw new NotFoundException("해당 기간에 작성된 게시글이 없습니다.");
+        }
+        return articles.map(ArticleResDto::new);
     }
 
     public ArticleResDto updateArticle(Long id, ArticleReqDto requestDto, Long userId) {

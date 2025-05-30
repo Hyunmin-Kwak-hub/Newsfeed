@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/articles")
 @RequiredArgsConstructor
@@ -31,9 +33,14 @@ public class ArticleController {
         return articleService.getArticle(id);
     }
 
-    @GetMapping("/articles/user")
-    public Page<ArticleResDto> getArticlesByUser(@RequestParam Long userId, @RequestParam(defaultValue = "0") int page) {
+    @GetMapping("/users/{userId}")
+    public Page<ArticleResDto> getArticlesByUser(@PathVariable Long userId, @RequestParam(defaultValue = "0") int page) {
         return articleService.getArticlesByUser(userId, page);
+    }
+
+    @GetMapping("/search")
+    public Page<ArticleResDto> getArticlesByDateBetween(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate")LocalDate endDate, @RequestParam(defaultValue = "0")int page) {
+        return articleService.getArticlesByDateBetween(startDate, endDate, page);
     }
 
     @PutMapping("/{id}")
