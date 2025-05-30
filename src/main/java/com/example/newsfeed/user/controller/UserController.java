@@ -91,9 +91,13 @@ public class UserController {
     // 회원 탈퇴
     @DeleteMapping()
     public ResponseEntity<Void> deleteUser(
-            @Valid @RequestBody DeleteUserReqDto reqDto
+            @Valid @RequestBody DeleteUserReqDto reqDto,
+            HttpServletRequest request
     ) {
         userService.deleteUser(reqDto.getPassword());
+        String bearerJwt = request.getHeader("Authorization");
+        String jwt = jwtUtil.substringToken(bearerJwt);
+        blackListService.addBlackList(jwt);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

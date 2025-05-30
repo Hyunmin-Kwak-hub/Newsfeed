@@ -103,6 +103,7 @@ public class UserService {
         return new UserResDto(user);
     }
 
+    @Transactional
     public void deleteUser(String password) {
         User user = findUserBySecurity();
         checkUserPassword(password, user);
