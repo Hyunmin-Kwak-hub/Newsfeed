@@ -1,0 +1,29 @@
+package com.example.newsfeed.user.service;
+
+import com.example.newsfeed.user.domain.entity.BlackList;
+import com.example.newsfeed.user.domain.repository.BlackListRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class BlackListService {
+
+    private final BlackListRepository blackListRepository;
+
+    @Transactional
+    public void addBlackList(String token) {
+        if (!isExistBlackList(token)) {
+            blackListRepository.save(new BlackList(token));
+        }
+    }
+
+    public boolean isExistBlackList(String token) {
+        return blackListRepository.existsBlackListByToken(token);
+    }
+
+}

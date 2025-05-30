@@ -1,7 +1,10 @@
 package com.example.newsfeed.user.controller;
 
+import com.example.newsfeed.global.config.JwtUtil;
 import com.example.newsfeed.user.controller.dto.*;
 import com.example.newsfeed.user.service.UserService;
+import com.example.newsfeed.user.service.BlackListService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final BlackListService blackListService;
+    private final JwtUtil jwtUtil;
 
     // 회원 생성
     @PostMapping()
@@ -30,8 +35,24 @@ public class UserController {
     }
 
     // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<LoginResDto> login(@Valid @RequestBody LoginReqDto reqDto) {
+        LoginResDto loginResDto = userService.login(reqDto.getEmail(), reqDto.getPassword());
+        return new ResponseEntity<>(loginResDto, HttpStatus.OK);
+    }
 
-    // 로그아웃
+    // 로그인
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @Valid @RequestBody LogoutReqDto reqDto,
+            HttpServletRequest request
+    ) {
+        userService.logout(reqDto.getPassword());
+        String bearerJwt = request.getHeader("Authorization");
+        String jwt = jwtUtil.substringToken(bearerJwt);
+        blackListService.addBlackList(jwt);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     // 회원 전체 조회
     @GetMapping
@@ -50,32 +71,33 @@ public class UserController {
     }
 
     //회원 단건 수정
-    @PutMapping("/{user_id}")
+    @PutMapping()
     public ResponseEntity<UserResDto> updateUser(
-            @PathVariable Long user_id,
             @Valid @RequestBody UpdateUserReqDto reqDto
     ) {
-        UserResDto userResDto = userService.updateUser(user_id, reqDto);
+        UserResDto userResDto = userService.updateUser(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
     //회원 비밀번호 수정
-    @PutMapping("/{user_id}/password")
+    @PutMapping("/password")
     public ResponseEntity<UserResDto> updateUser(
-            @PathVariable Long user_id,
             @Valid @RequestBody UpdateUserPasswordReqDto reqDto
     ) {
-        UserResDto userResDto = userService.updateUserPassword(user_id, reqDto);
+        UserResDto userResDto = userService.updateUserPassword(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
     // 회원 탈퇴
-    @DeleteMapping("/{user_id}")
+    @DeleteMapping()
     public ResponseEntity<Void> deleteUser(
-            @PathVariable Long user_id,
-            @Valid @RequestBody DeleteUserReqDto reqDto
+            @Valid @RequestBody DeleteUserReqDto reqDto,
+            HttpServletRequest request
     ) {
-        userService.deleteUser(user_id, reqDto.getPassword());
+        userService.deleteUser(reqDto.getPassword());
+        String bearerJwt = request.getHeader("Authorization");
+        String jwt = jwtUtil.substringToken(bearerJwt);
+        blackListService.addBlackList(jwt);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

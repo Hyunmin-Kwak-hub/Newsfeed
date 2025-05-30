@@ -1,5 +1,7 @@
 package com.example.newsfeed.user.service;
 
+import com.example.newsfeed.global.config.JwtUtil;
+import com.example.newsfeed.global.dto.AuthUserDto;
 import com.example.newsfeed.user.controller.dto.*;
 import com.example.newsfeed.user.domain.entity.User;
 import com.example.newsfeed.user.domain.repository.UserRepository;
@@ -11,6 +13,8 @@ import com.example.newsfeed.global.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +23,14 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
+    @Transactional
     public UserResDto createUser(CreateUserReqDto reqDto) {
         boolean existsEmail = userRepository.existsUserByEmail(reqDto.getEmail());
         if (existsEmail) {
@@ -34,9 +41,29 @@ public class UserService {
         return new UserResDto(userRepository.save(user));
     }
 
+    public LoginResDto login(String email, String password) {
+        User user = userRepository.findUserByEmail(email)
+                .filter(find -> !find.getDeleted())
+                .orElseThrow(() -> new NotFoundException("이메일이 일치하지 않습니다."));
+        checkUserPassword(password, user);
+        String token = jwtUtil.createToken(user.getId(), user.getUsername());
+        return new LoginResDto(token, user.getUsername());
+    }
+
+    public void logout(String password) {
+        // 본인 확인
+        User user = findUserBySecurity();
+        checkUserPassword(password, user);
+    }
+
     public List<UserListResDto> findUserList(Pageable pageable) {
         return userRepository.findAll(pageable).stream()
                 .filter(find -> !find.getDeleted()).map(UserListResDto::new).toList();
+    }
+
+    public UserResDto findUserById(Long userId) {
+        User user = findNotDeletedUserById(userId);
+        return new UserResDto(user);
     }
 
     private User findNotDeletedUserById(Long userId) {
@@ -45,14 +72,15 @@ public class UserService {
                 .orElseThrow(() ->new NotFoundException("유저가 존재하지 않습니다. userId = " + userId));
     }
 
-    public UserResDto findUserById(Long userId) {
-        User user = findNotDeletedUserById(userId);
-        return new UserResDto(user);
+    private User findUserBySecurity() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = ((AuthUserDto) authentication.getPrincipal()).getId();
+        return findNotDeletedUserById(id);
     }
 
     @Transactional
-    public UserResDto updateUser(Long userId, UpdateUserReqDto reqDto) {
-        User user = findNotDeletedUserById(userId);
+    public UserResDto updateUser(UpdateUserReqDto reqDto) {
+        User user = findUserBySecurity();
         checkUserPassword(reqDto.getPassword(), user);
 
         user.updateUser(reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
@@ -61,8 +89,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserResDto updateUserPassword(Long userId, UpdateUserPasswordReqDto reqDto) {
-        User user = findNotDeletedUserById(userId);
+    public UserResDto updateUserPassword(UpdateUserPasswordReqDto reqDto) {
+        User user = findUserBySecurity();
         checkUserPassword(reqDto.getPassword(), user);
 
         if(reqDto.getPassword().equals(reqDto.getNewPassword())) {
@@ -75,8 +103,9 @@ public class UserService {
         return new UserResDto(user);
     }
 
-    public void deleteUser(Long userId, String password) {
-        User user = findNotDeletedUserById(userId);
+    @Transactional
+    public void deleteUser(String password) {
+        User user = findUserBySecurity();
         checkUserPassword(password, user);
         userRepository.delete(user);
     }
