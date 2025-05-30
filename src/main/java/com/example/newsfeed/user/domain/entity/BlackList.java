@@ -3,7 +3,9 @@ package com.example.newsfeed.user.domain.entity;
 import com.example.newsfeed.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Getter
 @Entity
 @Table(name = "black_list")
@@ -15,8 +17,6 @@ public class BlackList extends BaseTimeEntity {
 
     @Column(columnDefinition = "longtext")
     private String token;
-
-    public BlackList() {}
 
     public BlackList(String token) {
         this.token = token;

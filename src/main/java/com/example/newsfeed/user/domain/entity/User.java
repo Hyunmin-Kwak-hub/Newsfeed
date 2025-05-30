@@ -3,8 +3,10 @@ package com.example.newsfeed.user.domain.entity;
 import com.example.newsfeed.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 
+@NoArgsConstructor
 @Getter
 @Entity
 @Table(name = "user")
@@ -32,8 +34,6 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Boolean deleted = false;
-
-    public User() {}
 
     public User(String email, String password, String username, String info, String profileImgUrl) {
         this.email = email;

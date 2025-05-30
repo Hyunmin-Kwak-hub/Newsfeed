@@ -1,9 +1,11 @@
 package com.example.newsfeed.user.controller.dto;
 
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class UpdateUserReqDto {
 
     @Pattern(regexp = "^.*(?=^.{8,20}$)(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$",
@@ -18,10 +20,4 @@ public class UpdateUserReqDto {
 
     private final String profileImgUrl;
 
-    public UpdateUserReqDto(String password, String userName, String info, String profileImgUrl) {
-        this.password = password;
-        this.userName = userName;
-        this.info = info;
-        this.profileImgUrl = profileImgUrl;
-    }
 }

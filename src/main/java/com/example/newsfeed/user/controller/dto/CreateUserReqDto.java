@@ -1,9 +1,11 @@
 package com.example.newsfeed.user.controller.dto;
 
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class CreateUserReqDto {
 
     @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$",
@@ -21,13 +23,5 @@ public class CreateUserReqDto {
     private final String info;
 
     private final String profileImgUrl;
-
-    public CreateUserReqDto(String email, String password, String userName, String info, String profileImgUrl) {
-        this.email = email;
-        this.password = password;
-        this.userName = userName;
-        this.info = info;
-        this.profileImgUrl = profileImgUrl;
-    }
 
 }
