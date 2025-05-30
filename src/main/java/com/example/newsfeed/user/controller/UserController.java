@@ -1,7 +1,10 @@
 package com.example.newsfeed.user.controller;
 
+import com.example.newsfeed.global.config.JwtUtil;
 import com.example.newsfeed.user.controller.dto.*;
 import com.example.newsfeed.user.service.UserService;
+import com.example.newsfeed.user.service.BlackListService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final BlackListService blackListService;
+    private final JwtUtil jwtUtil;
 
     // 회원 생성
     @PostMapping()
@@ -34,6 +39,19 @@ public class UserController {
     public ResponseEntity<LoginResDto> login(@Valid @RequestBody LoginReqDto reqDto) {
         LoginResDto loginResDto = userService.login(reqDto.getEmail(), reqDto.getPassword());
         return new ResponseEntity<>(loginResDto, HttpStatus.OK);
+    }
+
+    // 로그인
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @Valid @RequestBody LogoutReqDto reqDto,
+            HttpServletRequest request
+    ) {
+        userService.logout(reqDto.getPassword());
+        String bearerJwt = request.getHeader("Authorization");
+        String jwt = jwtUtil.substringToken(bearerJwt);
+        blackListService.addBlackList(jwt);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 회원 전체 조회

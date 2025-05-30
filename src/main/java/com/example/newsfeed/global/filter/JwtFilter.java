@@ -2,6 +2,7 @@ package com.example.newsfeed.global.filter;
 
 import com.example.newsfeed.global.config.JwtUtil;
 import com.example.newsfeed.global.dto.AuthUserDto;
+import com.example.newsfeed.user.service.BlackListService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -25,36 +26,25 @@ import java.util.Collections;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final BlackListService blackListService;
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
+            @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        String bearerJwt = request.getHeader("Authorization");
+        String bearerJwt = request.getHeader(AUTHORIZATION_HEADER);
         if (bearerJwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
         String jwt = jwtUtil.substringToken(bearerJwt);
+        checkBlacklisted(jwt, response);
         try {
-            Claims claims = jwtUtil.extractClaims(jwt);
-            if (claims == null) {
-                log.error("BAD_REQUEST: 잘못된 JWT 토큰입니다");
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
-                return;
-            }
-
-            Long userId = jwtUtil.getUserIdFromToken(jwt);
-            String name = jwtUtil.getNameFromToken(jwt);
-
-            AuthUserDto authUser = new AuthUserDto(userId, name);
-
-            UsernamePasswordAuthenticationToken authenticationToken
-                    = new UsernamePasswordAuthenticationToken(authUser, null, Collections.emptyList());
-
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            checkClaims(jwt, response);
+            setAuthentication(jwt);
             filterChain.doFilter(request, response);
 
         } catch (SecurityException | MalformedJwtException e) {
@@ -70,5 +60,32 @@ public class JwtFilter extends OncePerRequestFilter {
             log.error("Internal server error", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private void checkBlacklisted(String jwt, HttpServletResponse response) throws IOException {
+        if (blackListService.isExistBlackList(jwt)) {
+            log.error("BAD_REQUEST: 사용할 수 없는 JWT 토큰입니다.");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "사용할 수 없는 JWT 토큰입니다.");
+        }
+    }
+
+    private void checkClaims(String jwt, HttpServletResponse response) throws IOException {
+        Claims claims = jwtUtil.extractClaims(jwt);
+        if (claims == null) {
+            log.error("BAD_REQUEST: 잘못된 JWT 토큰입니다");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
+        }
+    }
+
+    private void setAuthentication(String jwt) {
+        Long userId = jwtUtil.getUserIdFromToken(jwt);
+        String name = jwtUtil.getNameFromToken(jwt);
+
+        AuthUserDto authUser = new AuthUserDto(userId, name);
+
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(authUser, null, Collections.emptyList());
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 }

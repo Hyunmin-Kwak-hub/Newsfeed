@@ -3,6 +3,7 @@ package com.example.newsfeed.global.config;
 import com.example.newsfeed.global.exception.CustomAccessDeniedHandler;
 import com.example.newsfeed.global.exception.CustomAuthenticationEntryPoint;
 import com.example.newsfeed.global.filter.JwtFilter;
+import com.example.newsfeed.user.service.BlackListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final BlackListService blackListService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
@@ -51,7 +53,7 @@ public class SecurityConfig {
                 )
 
                 //JWT 검증 필터 등록
-                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(jwtUtil, blackListService), UsernamePasswordAuthenticationFilter.class)
                 // 예외 처리 설정
                 .exceptionHandling(configurer ->
                         configurer

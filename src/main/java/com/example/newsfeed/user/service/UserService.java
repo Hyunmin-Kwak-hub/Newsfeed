@@ -23,12 +23,14 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    @Transactional
     public UserResDto createUser(CreateUserReqDto reqDto) {
         boolean existsEmail = userRepository.existsUserByEmail(reqDto.getEmail());
         if (existsEmail) {
@@ -46,6 +48,12 @@ public class UserService {
         checkUserPassword(password, user);
         String token = jwtUtil.createToken(user.getId(), user.getUsername());
         return new LoginResDto(token, user.getUsername());
+    }
+
+    public void logout(String password) {
+        // 본인 확인
+        User user = findUserBySecurity();
+        checkUserPassword(password, user);
     }
 
     public List<UserListResDto> findUserList(Pageable pageable) {
