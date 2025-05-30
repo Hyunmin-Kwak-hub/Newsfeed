@@ -1,5 +1,7 @@
 package com.example.newsfeed.comment.domain.entity;
 
+import com.example.newsfeed.article.domain.entity.Article;
+import com.example.newsfeed.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
