@@ -2,6 +2,7 @@ package com.example.newsfeed.global.filter;
 
 import com.example.newsfeed.global.config.JwtUtil;
 import com.example.newsfeed.global.dto.AuthUserDto;
+import com.example.newsfeed.global.exception.CustomAccessDeniedHandler;
 import com.example.newsfeed.user.service.BlackListService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,6 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final BlackListService blackListService;
     private static final String AUTHORIZATION_HEADER = "Authorization";
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Override
     protected void doFilterInternal(
@@ -35,13 +38,18 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
         String bearerJwt = request.getHeader(AUTHORIZATION_HEADER);
         if (bearerJwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
         String jwt = jwtUtil.substringToken(bearerJwt);
-        checkBlacklisted(jwt, response);
+        if (blackListService.isExistBlackList(jwt)) {
+            log.error("BAD_REQUEST: 사용할 수 없는 JWT 토큰입니다.");
+            customAccessDeniedHandler.handle(request, response, new AccessDeniedException("사용할 수 없는 JWT 토큰입니다."));
+            return;
+        }
         try {
             checkClaims(jwt, response);
             setAuthentication(jwt);
@@ -59,13 +67,6 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             log.error("Internal server error", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private void checkBlacklisted(String jwt, HttpServletResponse response) throws IOException {
-        if (blackListService.isExistBlackList(jwt)) {
-            log.error("BAD_REQUEST: 사용할 수 없는 JWT 토큰입니다.");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "사용할 수 없는 JWT 토큰입니다.");
         }
     }
 

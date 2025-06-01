@@ -2,11 +2,13 @@ package com.example.newsfeed.user.controller;
 
 import com.example.newsfeed.global.config.JwtUtil;
 import com.example.newsfeed.user.controller.dto.*;
+import com.example.newsfeed.user.domain.entity.User;
 import com.example.newsfeed.user.service.UserService;
 import com.example.newsfeed.user.service.BlackListService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -45,10 +48,12 @@ public class UserController {
             @Valid @RequestBody LogoutReqDto reqDto,
             HttpServletRequest request
     ) {
-        userService.logout(reqDto.getPassword());
+        User user = userService.logout(reqDto.getPassword());
         String bearerJwt = request.getHeader("Authorization");
         String jwt = jwtUtil.substringToken(bearerJwt);
         blackListService.addBlackList(jwt);
+
+        userService.callLogInfo("로그아웃", user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -88,11 +93,13 @@ public class UserController {
             @Valid @RequestBody DeleteUserReqDto reqDto,
             HttpServletRequest request
     ) {
-        userService.deleteUser(reqDto.getPassword());
+        User user = userService.deleteUser(reqDto.getPassword());
         // 회원탈퇴 후 로그아웃 진행
         String bearerJwt = request.getHeader("Authorization");
         String jwt = jwtUtil.substringToken(bearerJwt);
         blackListService.addBlackList(jwt);
+
+        userService.callLogInfo("회원탈퇴", user);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

@@ -30,7 +30,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    private void callLogInfo(String message, User user) {
+    public void callLogInfo(String message, User user) {
         log.info("{}: username={}, email={}", message, user.getUsername(), user.getEmail());
     }
 
@@ -69,12 +69,12 @@ public class UserService {
         return new LoginResDto(token, user.getUsername());
     }
 
-    public void logout(String password) {
+    public User logout(String password) {
         // 본인 확인
         User user = findUserBySecurity();
         checkUserPassword(password, user);
 
-        callLogInfo("로그아웃", user);
+        return user;
     }
 
     // 조회
@@ -141,13 +141,14 @@ public class UserService {
 
     // 삭제
     @Transactional
-    public void deleteUser(String password) {
+    public User deleteUser(String password) {
         // 본인 확인
         User user = findUserBySecurity();
         checkUserPassword(password, user);
         // 회원탈퇴
         userRepository.delete(user);
-        callLogInfo("회원탈퇴", user);
+
+        return user;
     }
 
     private void checkUserPassword(String password, User user) {
