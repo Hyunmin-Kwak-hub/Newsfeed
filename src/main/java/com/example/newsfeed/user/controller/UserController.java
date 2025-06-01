@@ -41,7 +41,7 @@ public class UserController {
         return new ResponseEntity<>(loginResDto, HttpStatus.OK);
     }
 
-    // 로그인
+    // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @Valid @RequestBody LogoutReqDto reqDto,
@@ -63,14 +63,14 @@ public class UserController {
         return new ResponseEntity<>(userResDtoList, HttpStatus.OK);
     }
 
-    //회원 단건 조회
+    // 회원 단건 조회
     @GetMapping("/{user_id}")
     public ResponseEntity<UserResDto> findUserById(@PathVariable Long user_id) {
         UserResDto userResDto = userService.findUserById(user_id);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
-    //회원 단건 수정
+    // 회원 단건 수정
     @PutMapping()
     public ResponseEntity<UserResDto> updateUser(
             @Valid @RequestBody UpdateUserReqDto reqDto
@@ -79,9 +79,9 @@ public class UserController {
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
-    //회원 비밀번호 수정
+    // 회원 비밀번호 수정
     @PutMapping("/password")
-    public ResponseEntity<UserResDto> updateUser(
+    public ResponseEntity<UserResDto> updateUserPassword(
             @Valid @RequestBody UpdateUserPasswordReqDto reqDto
     ) {
         UserResDto userResDto = userService.updateUserPassword(reqDto);
@@ -95,6 +95,7 @@ public class UserController {
             HttpServletRequest request
     ) {
         userService.deleteUser(reqDto.getPassword());
+        // 회원탈퇴 후 로그아웃 진행
         String bearerJwt = request.getHeader("Authorization");
         String jwt = jwtUtil.substringToken(bearerJwt);
         blackListService.addBlackList(jwt);

@@ -15,6 +15,7 @@ public class BlackListService {
 
     private final BlackListRepository blackListRepository;
 
+    // 생성
     @Transactional
     public void addBlackList(String token) {
         if (!isExistBlackList(token)) {
@@ -22,6 +23,7 @@ public class BlackListService {
         }
     }
 
+    // 조회
     public boolean isExistBlackList(String token) {
         return blackListRepository.existsBlackListByToken(token);
     }
