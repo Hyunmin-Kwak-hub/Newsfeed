@@ -8,6 +8,6 @@ import lombok.Getter;
 public class LoginResDto {
 
     private final String token;
-    private final String userName;
+    private final String username;
 
 }
