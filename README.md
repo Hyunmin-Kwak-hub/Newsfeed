@@ -10,6 +10,19 @@ Spring Boot에서 JPA와 JWT에 대한 이해를 바탕으로, 실제로 사용�
 
 `Java` `Spring Boot` `Github` `MySQL` `JPA` `JWT`
 
+## 설계
+
+### 와이어프레임
+[와이어프레임 by notion](https://www.notion.so/teamsparta/2002dc3ef51480a0a2b0c849619fad30)
+
+### ERD
+
+[ERD by notion](https://www.notion.so/teamsparta/ERD-2002dc3ef51480d58ca8eed56bd0218c)
+
+### API 명세서
+[API by notion](https://www.notion.so/teamsparta/API-2002dc3ef514809ab0a2d060b1757a19)
+
+
 ## 사용법
 
 <details>
@@ -54,5 +67,20 @@ spring:
 ![envGuide3.png](readme/envGuide3.png)
 ![envGuide4.png](readme/envGuide4.png)
 ---
+
+</details>
+
+<details>
+
+<summary> Postman 에서 로그인 하는법 </summary>
+
+1. 로그인 후, token의 Bearer 뒷부분을 복사한다.
+
+![loginGuide1.png](readme/loginGuide1.png)
+
+2. 로그인이 필요한 api 요청에서, **Auth의 Auth Type**에 **Bearer Token**을 선택한다.
+3. 복사한 토큰을 token에 입력한다.
+
+![loginGuide2.png](readme/loginGuide2.png)
 
 </details>
