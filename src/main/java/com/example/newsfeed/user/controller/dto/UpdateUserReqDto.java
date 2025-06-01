@@ -14,7 +14,7 @@ public class UpdateUserReqDto {
 
     @Pattern(regexp = "^[a-zA-Z0-9가-힣]{2,10}$",
             message = "이름은 영문자, 한글, 숫자만 사용가능하며, 길이는 2 ~ 10 입니다.")
-    private final String userName;
+    private final String username;
 
     private final String info;
 

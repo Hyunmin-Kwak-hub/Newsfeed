@@ -49,7 +49,7 @@ public class UserService {
         }
         String encodedPassword = passwordEncoder.encode(reqDto.getPassword());
         // 회원가입
-        User user = new User(reqDto.getEmail(), encodedPassword, reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
+        User user = new User(reqDto.getEmail(), encodedPassword, reqDto.getUsername(), reqDto.getInfo(), reqDto.getProfileImgUrl());
         callLogInfo("회원가입", user);
         return new UserResDto(userRepository.save(user));
     }
@@ -111,7 +111,7 @@ public class UserService {
         checkUserPassword(reqDto.getPassword(), user);
 
         // 회원 정보 수정
-        user.updateUser(reqDto.getUserName(), reqDto.getInfo(), reqDto.getProfileImgUrl());
+        user.updateUser(reqDto.getUsername(), reqDto.getInfo(), reqDto.getProfileImgUrl());
 
         callLogInfo("회원 정보 수정", user);
         return new UserResDto(user);
