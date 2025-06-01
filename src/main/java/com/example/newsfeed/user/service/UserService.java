@@ -79,8 +79,11 @@ public class UserService {
 
     // 조회
     public List<UserListResDto> findUserList(Pageable pageable) {
-        return userRepository.findAll(pageable).stream()
-                .filter(find -> !find.getDeleted()).map(UserListResDto::new).toList();
+        return userRepository.findAll(pageable)
+                .stream()
+                .filter(find -> !find.getDeleted())
+                .map(UserListResDto::new)
+                .toList();
     }
 
     public UserResDto findUserById(Long userId) {
@@ -124,7 +127,7 @@ public class UserService {
         checkUserPassword(reqDto.getPassword(), user);
 
         // 비밀번호 변경
-        if(reqDto.getPassword().equals(reqDto.getNewPassword())) {
+        if (reqDto.getPassword().equals(reqDto.getNewPassword())) {
             callLogError("현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.", user);
             throw new BadRequestException("현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
         }

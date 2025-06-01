@@ -70,18 +70,14 @@ public class UserController {
 
     // 회원 단건 수정
     @PutMapping()
-    public ResponseEntity<UserResDto> updateUser(
-            @Valid @RequestBody UpdateUserReqDto reqDto
-    ) {
+    public ResponseEntity<UserResDto> updateUser(@Valid @RequestBody UpdateUserReqDto reqDto) {
         UserResDto userResDto = userService.updateUser(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
     // 회원 비밀번호 수정
     @PutMapping("/password")
-    public ResponseEntity<UserResDto> updateUserPassword(
-            @Valid @RequestBody UpdateUserPasswordReqDto reqDto
-    ) {
+    public ResponseEntity<UserResDto> updateUserPassword(@Valid @RequestBody UpdateUserPasswordReqDto reqDto) {
         UserResDto userResDto = userService.updateUserPassword(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
