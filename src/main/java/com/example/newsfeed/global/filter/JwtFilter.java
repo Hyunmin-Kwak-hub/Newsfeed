@@ -1,9 +1,11 @@
 package com.example.newsfeed.global.filter;
 
+import com.example.newsfeed.global.common.Const;
 import com.example.newsfeed.global.config.JwtUtil;
 import com.example.newsfeed.global.dto.AuthUserDto;
-import com.example.newsfeed.global.exception.CustomAccessDeniedHandler;
+import com.example.newsfeed.global.dto.ErrorResDto;
 import com.example.newsfeed.user.service.BlackListService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -15,12 +17,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 @Slf4j(topic = "JwtFilter")
@@ -29,8 +32,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final BlackListService blackListService;
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Override
     protected void doFilterInternal(
@@ -39,43 +40,44 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String bearerJwt = request.getHeader(AUTHORIZATION_HEADER);
+        String bearerJwt = request.getHeader(Const.AUTHORIZATION_HEADER);
         if (bearerJwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
         String jwt = jwtUtil.substringToken(bearerJwt);
-        if (blackListService.isExistBlackList(jwt)) {
-            log.error("BAD_REQUEST: 사용할 수 없는 JWT 토큰입니다.");
-            customAccessDeniedHandler.handle(request, response, new AccessDeniedException("사용할 수 없는 JWT 토큰입니다."));
-            return;
-        }
+        if (handleBlackList(jwt, response)) return;
         try {
-            checkClaims(jwt, response);
+            if (handleInvalidClaims(jwt, response)) return;
             setAuthentication(jwt);
             filterChain.doFilter(request, response);
 
         } catch (SecurityException | MalformedJwtException e) {
-            log.error("UNAUTHORIZED: 유효하지 않는 JWT 서명입니다.", e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
+            sendResponse(HttpStatus.UNAUTHORIZED, response, "유효하지 않는 JWT 서명입니다.", e.getMessage());
         } catch (ExpiredJwtException e) {
-            log.error("UNAUTHORIZED: 만료된 JWT 토큰입니다.", e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
+            sendResponse(HttpStatus.UNAUTHORIZED, response, "만료된 JWT 토큰입니다.", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            log.error("BAD_REQUEST: 지원되지 않는 JWT 토큰입니다.", e);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
+            sendResponse(HttpStatus.BAD_REQUEST, response, "지원되지 않는 JWT 토큰입니다.", e.getMessage());
         } catch (Exception e) {
-            log.error("Internal server error", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, response, "Internal server error", e.getMessage());
         }
     }
 
-    private void checkClaims(String jwt, HttpServletResponse response) throws IOException {
+    private boolean handleBlackList(String jwt, HttpServletResponse response) throws IOException {
+        if (blackListService.isExistBlackList(jwt)) {
+            sendResponse(HttpStatus.FORBIDDEN, response, "사용할 수 없는 JWT 토큰입니다.", "A token that is blacklisted.");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleInvalidClaims(String jwt, HttpServletResponse response) throws IOException {
         Claims claims = jwtUtil.extractClaims(jwt);
         if (claims == null) {
-            log.error("BAD_REQUEST: 잘못된 JWT 토큰입니다");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
+            sendResponse(HttpStatus.BAD_REQUEST, response, "잘못된 JWT 토큰입니다.", "An error occurred in the payload return process.");
+            return true;
         }
+        return false;
     }
 
     private void setAuthentication(String jwt) {
@@ -89,4 +91,23 @@ public class JwtFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
+
+    private void sendResponse(HttpStatus status, HttpServletResponse response, String message, String errorDetail) throws IOException {
+        ErrorResDto errorResDto = new ErrorResDto(
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                errorDetail,
+                LocalDateTime.now().toString()
+        );
+        String responseBody = new ObjectMapper().writeValueAsString(errorResDto);
+
+        log.error("{}: {}", status.getReasonPhrase(), errorDetail);
+
+        response.setStatus(status.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(responseBody);
+    }
+
 }

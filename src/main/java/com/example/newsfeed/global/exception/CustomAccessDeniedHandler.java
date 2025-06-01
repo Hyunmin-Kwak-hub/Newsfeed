@@ -29,6 +29,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         ErrorResDto errorResDto = new ErrorResDto(
                 status.value(),
                 status.getReasonPhrase(),
+                "AccessDenied Uri",
                 accessDeniedException.getMessage(),
                 LocalDateTime.now().toString()
         );

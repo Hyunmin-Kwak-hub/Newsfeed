@@ -1,5 +1,6 @@
 package com.example.newsfeed.user.controller;
 
+import com.example.newsfeed.global.common.Const;
 import com.example.newsfeed.global.config.JwtUtil;
 import com.example.newsfeed.user.controller.dto.*;
 import com.example.newsfeed.user.domain.entity.User;
@@ -49,7 +50,7 @@ public class UserController {
             HttpServletRequest request
     ) {
         User user = userService.logout(reqDto.getPassword());
-        String bearerJwt = request.getHeader("Authorization");
+        String bearerJwt = request.getHeader(Const.AUTHORIZATION_HEADER);
         String jwt = jwtUtil.substringToken(bearerJwt);
         blackListService.addBlackList(jwt);
 
@@ -95,7 +96,7 @@ public class UserController {
     ) {
         User user = userService.deleteUser(reqDto.getPassword());
         // 회원탈퇴 후 로그아웃 진행
-        String bearerJwt = request.getHeader("Authorization");
+        String bearerJwt = request.getHeader(Const.AUTHORIZATION_HEADER);
         String jwt = jwtUtil.substringToken(bearerJwt);
         blackListService.addBlackList(jwt);
 

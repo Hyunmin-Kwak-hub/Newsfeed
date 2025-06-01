@@ -53,7 +53,7 @@ public class SecurityConfig {
                 )
 
                 //JWT 검증 필터 등록
-                .addFilterBefore(new JwtFilter(jwtUtil, blackListService, customAccessDeniedHandler), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(jwtUtil, blackListService), UsernamePasswordAuthenticationFilter.class)
                 // 예외 처리 설정
                 .exceptionHandling(configurer ->
                         configurer

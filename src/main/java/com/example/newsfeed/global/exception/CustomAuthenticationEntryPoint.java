@@ -29,6 +29,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         ErrorResDto errorResDto = new ErrorResDto(
                 status.value(),
                 status.getReasonPhrase(),
+                "인증되지 않은 URL 요청입니다.",
                 authException.getMessage(),
                 LocalDateTime.now().toString()
         );
