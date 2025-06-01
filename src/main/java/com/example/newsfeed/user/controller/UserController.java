@@ -46,15 +46,11 @@ public class UserController {
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @Valid @RequestBody LogoutReqDto reqDto,
             HttpServletRequest request
     ) {
-        User user = userService.logout(reqDto.getPassword());
         String bearerJwt = request.getHeader(Const.AUTHORIZATION_HEADER);
         String jwt = jwtUtil.substringToken(bearerJwt);
         blackListService.addBlackList(jwt);
-
-        userService.callLogInfo("로그아웃", user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

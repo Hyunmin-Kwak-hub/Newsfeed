@@ -69,14 +69,6 @@ public class UserService {
         return new LoginResDto(token, user.getUsername());
     }
 
-    public User logout(String password) {
-        // 본인 확인
-        User user = findUserBySecurity();
-        checkUserPassword(password, user);
-
-        return user;
-    }
-
     // 조회
     public List<UserListResDto> findUserList(Pageable pageable) {
         return userRepository.findAll(pageable)
