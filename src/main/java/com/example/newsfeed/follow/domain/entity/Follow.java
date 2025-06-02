@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name = "follow")
+@Table(name = "follows")
 public class Follow {
 
     // 팔로우 id (PK)
@@ -17,18 +17,18 @@ public class Follow {
     // 팔로우한 사람 (본인)
     @ManyToOne
     @JoinColumn(name = "following_user_id")
-    private User following_user;
+    private User followingUser;
 
     // 팔로우 당한 사람 (친구)
     @ManyToOne
     @JoinColumn(name = "followed_user_id")
-    private User followed_user;
+    private User followedUser;
 
     public Follow() {}
 
-    public Follow(User following_user, User followed_user) {
-        this.following_user = following_user;
-        this.followed_user = followed_user;
+    public Follow(User followingUser, User followedUser) {
+        this.followingUser = followingUser;
+        this.followedUser = followedUser;
     }
 
 }
