@@ -39,7 +39,7 @@ public class ArticleController {
         return articleService.getArticle(id);
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/search/{userId}")
     public Page<ArticleResDto> getArticlesByUser(@PathVariable Long userId, @RequestParam(defaultValue = "0") int page) {
         return articleService.getArticlesByUser(userId, page);
     }

@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //user
                         .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/*", "/api/articles/search/*").permitAll()
                         //article
                         .requestMatchers(HttpMethod.GET, "/api/articles", "/api/*/articles", "/api/articles/*").permitAll()
                         //comment
