@@ -32,9 +32,6 @@ public class ArticleLike {
     @Column(name = "article_id", nullable = false)
     private Long articleId;
 
-    @Column(name = "comment_id", nullable = false)
-    private Long commentId;
-
     @Column(name = "created_date_time", nullable = false)
     private LocalDateTime createdDateTime;
 
