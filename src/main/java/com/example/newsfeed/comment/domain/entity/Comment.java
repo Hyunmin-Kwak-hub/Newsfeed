@@ -24,12 +24,6 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 작성자 ID
-    private Long userId;
-
-    // 게시글 ID
-    private Long articleId;
-
     // 연관관계: 댓글은 하나의 게시글에 소속 (다대일)
     @ManyToOne(fetch = FetchType.LAZY)  //일대다
     @JoinColumn(name = "article_id", nullable = false)

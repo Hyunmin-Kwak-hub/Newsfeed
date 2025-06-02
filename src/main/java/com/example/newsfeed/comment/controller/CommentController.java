@@ -46,7 +46,7 @@ public class CommentController {
                 @RequestBody CommentReqDto dto
     ) {
         commentService.updateComment(id, dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build(); // 리턴 값
     }
 
     // 댓글 삭제
