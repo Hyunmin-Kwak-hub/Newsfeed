@@ -40,7 +40,7 @@ public class UserService {
 
     // 생성
     @Transactional
-    public UserResDto createUser(CreateUserReqDto reqDto) {
+    public UserResDto saveUser(CreateUserReqDto reqDto) {
         // 회원 확인
         boolean existsEmail = userRepository.existsUserByEmail(reqDto.getEmail());
         if (existsEmail) {
@@ -54,7 +54,7 @@ public class UserService {
         return new UserResDto(userRepository.save(user));
     }
 
-    public LoginResDto login(String email, String password) {
+    public LoginResDto loginUser(String email, String password) {
         // 본인 확인
         User user = userRepository.findUserByEmail(email)
                 .filter(find -> !find.getDeleted())
@@ -70,7 +70,7 @@ public class UserService {
     }
 
     // 조회
-    public List<UserListResDto> findUserList(Pageable pageable) {
+    public List<UserListResDto> getUserList(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .stream()
                 .filter(find -> !find.getDeleted())
@@ -78,7 +78,7 @@ public class UserService {
                 .toList();
     }
 
-    public UserResDto findUserById(Long userId) {
+    public UserResDto getUserById(Long userId) {
         User user = findNotDeletedUserById(userId);
         return new UserResDto(user);
     }
@@ -100,7 +100,7 @@ public class UserService {
 
     // 수정
     @Transactional
-    public UserResDto updateUser(UpdateUserReqDto reqDto) {
+    public UserResDto setUserInfo(UpdateUserReqDto reqDto) {
         // 본인 확인
         User user = findUserBySecurity();
         checkUserPassword(reqDto.getPassword(), user);
@@ -113,7 +113,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResDto updateUserPassword(UpdateUserPasswordReqDto reqDto) {
+    public UserResDto setUserPassword(UpdateUserPasswordReqDto reqDto) {
         // 본인 확인
         User user = findUserBySecurity();
         checkUserPassword(reqDto.getPassword(), user);

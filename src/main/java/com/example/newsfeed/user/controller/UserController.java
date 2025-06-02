@@ -32,14 +32,14 @@ public class UserController {
     // 회원 생성
     @PostMapping()
     public ResponseEntity<UserResDto> createUser(@Valid @RequestBody CreateUserReqDto reqDto) {
-        UserResDto userResDto = userService.createUser(reqDto);
+        UserResDto userResDto = userService.saveUser(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.CREATED);
     }
 
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<LoginResDto> login(@Valid @RequestBody LoginReqDto reqDto) {
-        LoginResDto loginResDto = userService.login(reqDto.getEmail(), reqDto.getPassword());
+        LoginResDto loginResDto = userService.loginUser(reqDto.getEmail(), reqDto.getPassword());
         return new ResponseEntity<>(loginResDto, HttpStatus.OK);
     }
 
@@ -59,34 +59,34 @@ public class UserController {
     public ResponseEntity<List<UserListResDto>> findUserList(
             @PageableDefault(sort = "updatedDateTime", direction = Sort.Direction.DESC) final Pageable pageable
     ) {
-        List<UserListResDto> userResDtoList = userService.findUserList(pageable);
+        List<UserListResDto> userResDtoList = userService.getUserList(pageable);
         return new ResponseEntity<>(userResDtoList, HttpStatus.OK);
     }
 
     // 회원 단건 조회
     @GetMapping("/{user_id}")
     public ResponseEntity<UserResDto> findUserById(@PathVariable Long user_id) {
-        UserResDto userResDto = userService.findUserById(user_id);
+        UserResDto userResDto = userService.getUserById(user_id);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
     // 회원 단건 수정
     @PutMapping()
-    public ResponseEntity<UserResDto> updateUser(@Valid @RequestBody UpdateUserReqDto reqDto) {
-        UserResDto userResDto = userService.updateUser(reqDto);
+    public ResponseEntity<UserResDto> updateUserInfo(@Valid @RequestBody UpdateUserReqDto reqDto) {
+        UserResDto userResDto = userService.setUserInfo(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
     // 회원 비밀번호 수정
     @PutMapping("/password")
     public ResponseEntity<UserResDto> updateUserPassword(@Valid @RequestBody UpdateUserPasswordReqDto reqDto) {
-        UserResDto userResDto = userService.updateUserPassword(reqDto);
+        UserResDto userResDto = userService.setUserPassword(reqDto);
         return new ResponseEntity<>(userResDto, HttpStatus.OK);
     }
 
     // 회원 탈퇴
     @DeleteMapping()
-    public ResponseEntity<Void> deleteUser(
+    public ResponseEntity<Void> withdrawUser (
             @Valid @RequestBody DeleteUserReqDto reqDto,
             HttpServletRequest request
     ) {
