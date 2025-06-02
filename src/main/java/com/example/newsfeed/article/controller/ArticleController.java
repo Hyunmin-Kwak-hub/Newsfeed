@@ -3,11 +3,14 @@ package com.example.newsfeed.article.controller;
 import com.example.newsfeed.article.controller.dto.ArticleReqDto;
 import com.example.newsfeed.article.controller.dto.ArticleResDto;
 import com.example.newsfeed.article.service.ArticleService;
+import com.example.newsfeed.global.dto.AuthUserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -19,8 +22,11 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @PostMapping
-    public ArticleResDto createArticle(@Valid @RequestBody ArticleReqDto requestDto, HttpServletRequest request) {
-        return articleService.createArticle(requestDto, request);
+    public ArticleResDto createArticle(@Valid @RequestBody ArticleReqDto requestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((AuthUserDto) authentication.getPrincipal()).getId();
+
+        return articleService.createArticle(userId, requestDto);
     }
 
     @GetMapping
@@ -44,13 +50,18 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public ArticleResDto updateArticle(@PathVariable Long id, @RequestBody ArticleReqDto requestDto, @RequestParam Long userId) {
-        return articleService.updateArticle(id, requestDto, userId);
+    public ArticleResDto updateArticle(@PathVariable Long id, @Valid @RequestBody ArticleReqDto requestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((AuthUserDto) authentication.getPrincipal()).getId();
+
+        return articleService.updateArticle(id, userId, requestDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteArticle(@PathVariable Long id, HttpServletRequest request) {
-        Long userId = (Long) request.getAttribute("userId");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((AuthUserDto) authentication.getPrincipal()).getId();
+
         articleService.deleteArticle(id, userId);
         return ResponseEntity.ok("삭제되었습니다.");
     }
