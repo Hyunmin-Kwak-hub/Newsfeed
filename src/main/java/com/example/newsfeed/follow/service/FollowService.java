@@ -76,4 +76,10 @@ public class FollowService {
                 )).collect(Collectors.toList());
     }
 
+    public void unfollow(Long followingUserId, Long followedUserId) {
+        Follow follow = followRepository.findByFollowingUserIdAndFollowedUserId(followingUserId, followedUserId)
+                .orElseThrow(() -> new IllegalArgumentException("팔로우 관계가 존재하지 않습니다."));
+        followRepository.delete(follow);
+    }
+
 }

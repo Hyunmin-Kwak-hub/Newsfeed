@@ -41,4 +41,12 @@ public class FollowController {
     public List<FollowedUserArticleDto> getFollwedUsersArticles(@PathVariable Long userId) {
         return followService.getFollowedUsersArticles(userId);
     }
+
+    @DeleteMapping("/unfollows/{followedId}")
+    public ResponseEntity<String> unfollow(
+            @PathVariable("userId") Long userId,
+            @PathVariable("followedId") Long followedId) {
+        followService.unfollow(userId, followedId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
