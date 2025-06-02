@@ -8,8 +8,6 @@ import com.example.newsfeed.article.controller.dto.ArticleReqDto;
 import com.example.newsfeed.article.controller.dto.ArticleResDto;
 import com.example.newsfeed.article.domain.entity.Article;
 import com.example.newsfeed.article.domain.repository.ArticleRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
