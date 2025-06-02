@@ -23,6 +23,7 @@ public class FollowService {
     private final UserRepository userRepository;
     private final ArticleRepository articleRepository;
 
+    // 팔로우 저장
     public FollowResDto saveFollow(Long followingUserId, Long followedUserId) {
 
         // 팔로우 서비스 기능
@@ -45,6 +46,7 @@ public class FollowService {
         );
     }
 
+    // 팔로우 전체 목록 조회
     public List<FollowedUserDto> getFollowedUsers(Long userId) {
 
         List<Follow> follows = followRepository.findAllByFollowingUserId(userId);
@@ -57,6 +59,7 @@ public class FollowService {
                 .collect(Collectors.toList());
     }
 
+    // 팔로우 전체 게시글 조회
     public List<FollowedUserArticleDto> getFollowedUsersArticles(Long userId) {
         List<Follow> follows = followRepository.findAllByFollowingUserId(userId);
         List<User> followedUsers = follows.stream()
@@ -76,6 +79,7 @@ public class FollowService {
                 )).collect(Collectors.toList());
     }
 
+    // 팔로우 삭제
     public void unfollow(Long followingUserId, Long followedUserId) {
         Follow follow = followRepository.findByFollowingUserIdAndFollowedUserId(followingUserId, followedUserId)
                 .orElseThrow(() -> new IllegalArgumentException("팔로우 관계가 존재하지 않습니다."));

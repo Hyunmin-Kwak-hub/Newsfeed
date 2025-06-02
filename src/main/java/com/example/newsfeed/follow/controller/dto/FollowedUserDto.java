@@ -3,6 +3,7 @@ package com.example.newsfeed.follow.controller.dto;
 
 import lombok.Getter;
 
+// 팔로우 목록 반환을 위한 DTO
 @Getter
 public class FollowedUserDto {
 

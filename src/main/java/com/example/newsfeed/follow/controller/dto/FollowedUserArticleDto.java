@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+// 팔로우 게시글 반환을 위한 DTO
 @Getter
 @AllArgsConstructor
 public class FollowedUserArticleDto {
