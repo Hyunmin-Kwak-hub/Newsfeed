@@ -6,12 +6,12 @@ import lombok.Getter;
 @Getter
 public class UserListResDto {
 
-    private final String userName;
+    private final String username;
     private final String info;
     private final String profileImgUrl;
 
     public UserListResDto(User user) {
-        this.userName = user.getUsername();
+        this.username = user.getUsername();
         this.info = user.getInfo();
         this.profileImgUrl = user.getProfileImgUrl();
     }
