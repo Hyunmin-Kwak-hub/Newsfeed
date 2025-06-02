@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// 댓글 관련 HTTP 요청을 처리하는 REST 컨트롤러
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/articles／{articleId}/comments")
+@RequestMapping("/api/articles/{articleId}/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -38,4 +39,20 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentById(id));
     }
 
+    // 댓글 수정
+    @PutMapping("/{id}")
+        public ResponseEntity<CommentResDto> updateComment(
+                @PathVariable Long id,
+                @RequestBody CommentReqDto dto
+    ) {
+        commentService.updateComment(id, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        commentService.deleteComment(id);
+        return ResponseEntity.noContent().build();
+    }
 }
