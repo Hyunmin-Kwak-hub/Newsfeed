@@ -24,7 +24,6 @@ public class ArticleLikeService {
         if (authorId != null && authorId.equals(userId)) {
             throw new IllegalArgumentException("본인 글에는 좋아요를 누를 수 없습니다.");
         }
-
         articleLikeRepository.findByUserIdAndArticleId(userId, articleId)
                 .ifPresent(like -> {
                     throw new IllegalStateException("이미 좋아요를 눌렀습니다.");
