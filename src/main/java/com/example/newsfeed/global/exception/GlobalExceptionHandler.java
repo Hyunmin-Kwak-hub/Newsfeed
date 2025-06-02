@@ -19,7 +19,9 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = new HashMap<>();
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", "BAD_REQUEST");
-        List<Map<String, String>> errors = ex.getBindingResult().getFieldErrors().stream()
+        List<Map<String, String>> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
                 .map(error -> {
                     Map<String, String> errorDetail = new HashMap<>();
                     errorDetail.put("field", error.getField());
