@@ -1,12 +1,16 @@
 package com.example.newsfeed.follow.controller;
 
+import com.example.newsfeed.follow.controller.dto.FollowedUserDto;
 import com.example.newsfeed.follow.controller.dto.FollowReqDto;
 import com.example.newsfeed.follow.controller.dto.FollowResDto;
+import com.example.newsfeed.follow.controller.dto.FollowedUserDto;
 import com.example.newsfeed.follow.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/{userId}/follows")
@@ -25,4 +29,12 @@ public class FollowController {
 
         return new ResponseEntity<>(resDto, HttpStatus.CREATED);
     }
+
+    @GetMapping
+    public ResponseEntity<List<FollowedUserDto>> getFollowedUsers(@PathVariable Long userId) {
+        List<FollowedUserDto> followedUsers = followService.getFollowedUsers(userId);
+
+        return new ResponseEntity<>(followedUsers, HttpStatus.OK);
+    }
+
 }
