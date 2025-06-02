@@ -1,4 +1,28 @@
 package com.example.newsfeed.follow.controller;
 
+import com.example.newsfeed.follow.controller.dto.FollowReqDto;
+import com.example.newsfeed.follow.controller.dto.FollowResDto;
+import com.example.newsfeed.follow.service.FollowService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/{userId}/follows")
+@RequiredArgsConstructor
 public class FollowController {
+
+    private final FollowService followService;
+
+    @PostMapping
+    public ResponseEntity<FollowResDto> followUser(
+            @PathVariable Long userId, // 본인 식별자
+            @RequestBody FollowReqDto followReqDto // 상대방 식별자
+    ) {
+
+        FollowResDto resDto = followService.saveFollow(userId, followReqDto.getFollowedUserId());
+
+        return new ResponseEntity<>(resDto, HttpStatus.CREATED);
+    }
 }
