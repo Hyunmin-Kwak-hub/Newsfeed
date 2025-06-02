@@ -31,12 +31,11 @@ public class ArticleLike {
 
     @Column(name = "article_id", nullable = false)
     private Long articleId;
-    //article 직접참조 가능하도록 변경요망 객체간 연관관계 학습요망
 
     @Column(name = "comment_id", nullable = false)
     private Long commentId;
 
-    @Column(name = "create_date_time", nullable = false)
+    @Column(name = "created_date_time", nullable = false)
     private LocalDateTime createdDateTime;
 
 
