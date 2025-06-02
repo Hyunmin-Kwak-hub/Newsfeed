@@ -19,6 +19,8 @@ Spring Boot에서 JPA와 JWT에 대한 이해를 바탕으로, 실제로 사용�
 
 [ERD by notion](https://www.notion.so/teamsparta/ERD-2002dc3ef51480d58ca8eed56bd0218c)
 
+![erd.png](readme/erd.png)
+
 ### API 명세서
 [API by notion](https://www.notion.so/teamsparta/API-2002dc3ef514809ab0a2d060b1757a19)
 
@@ -84,3 +86,41 @@ spring:
 ![loginGuide2.png](readme/loginGuide2.png)
 
 </details>
+
+## 프로젝트 구조
+```
+schedule-app/
+├── src/
+│   ├── main/java/
+│   │   └── com/example/scheduleapp/
+│   │       ├── article/
+│   │       │   ├── controller/
+│   │       │   │   ├── dto/
+│   │       │   │   │   ├── ArticleReqDto.java
+│   │       │   │   │   └── ArticleResDto.java
+│   │       │   │   └── ArticleController.java
+│   │       │   ├── domain/
+│   │       │   │   ├── entity/
+│   │       │   │   │   └── Article.java
+│   │       │   │   └── repository/
+│   │       │   │       └── ArticleRepository.java
+│   │       │   └── service/
+│   │       │       └── ArticleService.java
+│   │       ├── comment/
+│   │       ├── follow/
+│   │       ├── glbal/
+│   │       │   ├── common/
+│   │       │   ├── config/
+│   │       │   ├── dto/
+│   │       │   ├── exception/
+│   │       │   └── filter/
+│   │       ├── like/
+│   │       └── user/
+│   └── resources/
+│       ├── static/
+│       ├── templates/
+│       └── application.yml
+├── build.gradle
+├── readme/
+└── README.md
+```
