@@ -1,4 +1,8 @@
 package com.example.newsfeed.follow.domain.repository;
 
-public class FollowRepository {
+import com.example.newsfeed.follow.domain.entity.Follow;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FollowRepository extends JpaRepository<Follow, Long> {
+
 }
