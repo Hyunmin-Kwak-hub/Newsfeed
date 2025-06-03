@@ -19,7 +19,6 @@ public class CommentLikeController {
     // 댓글 좋아요 추가
     @PostMapping
     public ResponseEntity<CommentLikeResDto> likeComment(
-            @PathVariable("article_id") Long articleId,
             @PathVariable("comment_id") Long commentId,
             @RequestBody CommentLikeReqDto dto) {
 
@@ -30,7 +29,6 @@ public class CommentLikeController {
     // 댓글 좋아요 삭제
     @DeleteMapping
     public ResponseEntity<Void> unlikeComment(
-            @PathVariable("article_id") Long articleId,
             @PathVariable("comment_id") Long commentId,
             @RequestBody CommentLikeReqDto dto) {
 
@@ -41,7 +39,6 @@ public class CommentLikeController {
     // 댓글 좋아요 조회
     @GetMapping
     public ResponseEntity<Long> countCommentLikes(
-            @PathVariable("article_id") Long articleId,
             @PathVariable("comment_id") Long commentId) {
 
         return ResponseEntity.ok(commentLikeService.countLikes(commentId));
